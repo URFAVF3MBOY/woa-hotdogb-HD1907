@@ -1,0 +1,12 @@
+# build output and fetched dependencies (all anchored to the repo root)
+/Build/
+/Conf/
+/out/
+/Binaries/
+/MU_BASECORE/CryptoPkg/Binaries/edk2-basecrypto-driver-bin_extdep/
+/MU_BASECORE/BaseTools/Source/C/bin/
+/MU_BASECORE/BaseTools/Source/C/libs/
+/BootShim/BootShim.elf
+/BootShim/BootShim.bin
+**/__pycache__/
+*.pyc

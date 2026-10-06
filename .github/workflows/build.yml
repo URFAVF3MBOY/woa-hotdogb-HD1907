@@ -1,0 +1,92 @@
+name: Build hotdogb UEFI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      dsdt:
+        description: Which DSDT to build with
+        type: choice
+        default: sink5v29
+        options:
+          - sink5v29
+          - sink5v29_dcma1500
+          - sink5v29j
+          - sink5v20
+          - sink5v
+          - mshw1004
+          - repo-default
+          - all
+      custom_dsdt:
+        description: Optional - path of your own .aml inside this repo (overrides the choice above)
+        required: false
+        default: ''
+
+permissions:
+  contents: write        # only used to attach images to a release on v* tags
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld llvm build-essential uuid-dev git curl
+
+      - name: Cache downloaded dependencies (crypto binaries + Binaries/)
+        uses: actions/cache@v4
+        with:
+          path: |
+            MU_BASECORE/CryptoPkg/Binaries/edk2-basecrypto-driver-bin_extdep
+            Binaries
+          key: deps-${{ hashFiles('scripts/fetch_deps.sh') }}
+
+      - name: Decide what to build
+        id: pick
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          CHOICE: ${{ inputs.dsdt }}
+          CUSTOM: ${{ inputs.custom_dsdt }}
+        run: |
+          if [ "$EVENT" = workflow_dispatch ]; then
+            if [ -n "$CUSTOM" ]; then echo "list=$CUSTOM" >> "$GITHUB_OUTPUT"
+            else echo "list=$CHOICE" >> "$GITHUB_OUTPUT"; fi
+          elif [[ "$REF" == refs/tags/v* ]]; then
+            echo "list=all" >> "$GITHUB_OUTPUT"
+          else
+            echo "list=repo-default" >> "$GITHUB_OUTPUT"      # push / PR: just prove the repo still builds
+          fi
+
+      - name: Build
+        env:
+          LIST: ${{ steps.pick.outputs.list }}
+        run: scripts/ci_build.sh "$LIST"
+
+      - name: Upload images
+        uses: actions/upload-artifact@v4
+        with:
+          name: oneplus-hotdogb-uefi
+          path: out/
+          if-no-files-found: error
+
+      - name: Attach to release (v* tags)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/*
