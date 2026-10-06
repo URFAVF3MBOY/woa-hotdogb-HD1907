@@ -5,27 +5,18 @@ A minimal, self-contained builder for the **OnePlus 7T (hotdogb, SM8150)** UEFI 
 `mu_aloha_platforms`) to only what this one device needs.
 
 ```
-./build.sh                          # -> out/oneplus-hotdogb.img
-DSDT=dsdt/DSDT_hotdogb_mshw1004_sink5v29.aml ./build.sh   # build with one of the DSDT variants
+bash build.sh                       # -> out/oneplus-hotdogb.img
 fastboot boot out/oneplus-hotdogb.img
 ```
 
 ## Building on GitHub (no Linux machine needed)
-1. Create a new repository and push this folder to it (`git init && git add -A && git commit -m init && git push`).
-   The repo is about 95 MB and contains no single file over 20 MB, so Git LFS is not needed.
-2. Open **Actions → Build hotdogb UEFI → Run workflow**, choose a DSDT (default `sink5v29`), run it.
-   * `repo-default` = the DSDT committed in `Platforms/…/ACPI`, `all` = repo-default plus every file in `dsdt/`.
-   * To use your own DSDT: commit it somewhere in the repo and put its path in *custom_dsdt*.
-3. Download the `oneplus-hotdogb-uefi` artifact (images plus `SHA256SUMS`) from the finished run.
-   Rename the image to `windows.img` if that is what your flashing steps expect.
+1. Create a new repository and push this folder to it. It is about 95 MB with no file over 20 MB, so Git LFS is not needed.
+2. Open **Actions → Build hotdogb UEFI → Run workflow** (it also runs on every push to `main`).
+3. Download the `oneplus-hotdogb-uefi` artifact from the finished run: `oneplus-hotdogb.img` plus `SHA256SUMS`.
+   Rename the image to `windows.img` if your flashing steps expect that name.
 
-Other triggers: every push to `main` and every pull request builds the `repo-default` image (a check that the repo
-still builds); pushing a tag such as `v1` builds **all** variants and attaches them to a GitHub Release.
+Pushing a tag such as `v1` also attaches the image to a GitHub Release.
 First run takes about 10 minutes (it downloads the 255 MB crypto package); later runs reuse a cache.
-Each extra DSDT variant in the same run costs about 3 more minutes. The workflow uses only the standard
-runner image (`ubuntu-24.04`) and public downloads from GitHub.
-
-You can run the same thing locally: `scripts/ci_build.sh sink5v29 sink5v29_dcma1500` (or `all`).
 
 ## Requirements
 Tested on Ubuntu 24.04-like Linux with clang 18, Python 3.13 (standard library only — no pip packages,
@@ -54,7 +45,6 @@ Disk: about 90 MB for the repo, plus about 1.5 GB while the crypto package downl
 | `Silicon/QC/Sm8150` | SM8150 silicon package |
 | `MU_BASECORE`, `Common/*`, `Silicon/Arm/MU_TIANO`, `Features/*` | Project Mu / edk2 files that are actually used; BaseTools C and Python sources; `MdePkg/Include` |
 | `BootShim`, `ImageResources/emptyramdisk`, `tools/` | boot image packaging |
-| `dsdt/` | the DSDT variants from the charging work (see below) |
 
 Removed: every other device and SoC, the secure-boot variant (`SurfaceDuo1.dsc`), the Surface Duo / Epsilon / Zeta
 images (about 100 MB), docs, CI files, Docker files, stuart scripts, unit tests, unused parts of the submodules and their nested submodules
@@ -69,16 +59,10 @@ as the full tree, the same FVMAIN size (12,562,432 bytes), and 104 of 107 `.efi`
 
 **Not verified:** booting the resulting image on a phone, and Debug/NOOPT targets. Only RELEASE / NoSb was built.
 
-## DSDT variants (`dsdt/`)
-`Device/oneplus-hotdogb/ACPI/DSDT.aml` in the repo is the fork's own file (md5 `89bb42cb…`). The files in `dsdt/`
-are the ones used during the charging experiments:
-
-| File | Meaning |
-|---|---|
-| `DSDT_hotdogb_mshw1004.aml` | base DSDT the images were patched from (md5 `d5bd27a2…`) |
-| `…_sink5v.aml` / `…_sink5v20.aml` / `…_sink5v29.aml` | sink PDO 5 V at default / 2.0 A / 2.9 A (v29 = best so far) |
-| `…_sink5v29j.aml` | v29 with a JEITA test change |
-| `…_sink5v29_dcma1500.aml` | v29 with DCMA 900 → 1500 (the image that made A-to-C stop working for you) |
+## The DSDT
+There is exactly one: `Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/ACPI/DSDT.aml`. It is the **sink5v29** DSDT
+(md5 `3b893e9ba516f08d08957ce37d517bb9`): the `mshw1004` base with the USB-C sink PDO set to 5 V / 2.9 A.
+It does **not** include the DCMA 900 → 1500 change. To try something else, replace that one file and rebuild.
 
 ## Licences
 Project Mu / edk2 (BSD-2-Clause-Patent), OpenSSL (Apache-2.0), the fork's `LICENSE`, and the licence files that

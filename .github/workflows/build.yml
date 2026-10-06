@@ -6,27 +6,9 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
-    inputs:
-      dsdt:
-        description: Which DSDT to build with
-        type: choice
-        default: sink5v29
-        options:
-          - sink5v29
-          - sink5v29_dcma1500
-          - sink5v29j
-          - sink5v20
-          - sink5v
-          - mshw1004
-          - repo-default
-          - all
-      custom_dsdt:
-        description: Optional - path of your own .aml inside this repo (overrides the choice above)
-        required: false
-        default: ''
 
 permissions:
-  contents: write        # only used to attach images to a release on v* tags
+  contents: write        # only used to attach the image to a release on v* tags
 
 concurrency:
   group: build-${{ github.ref }}
@@ -35,7 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -56,29 +38,13 @@ jobs:
             Binaries
           key: deps-${{ hashFiles('scripts/fetch_deps.sh') }}
 
-      - name: Decide what to build
-        id: pick
-        env:
-          EVENT: ${{ github.event_name }}
-          REF: ${{ github.ref }}
-          CHOICE: ${{ inputs.dsdt }}
-          CUSTOM: ${{ inputs.custom_dsdt }}
-        run: |
-          if [ "$EVENT" = workflow_dispatch ]; then
-            if [ -n "$CUSTOM" ]; then echo "list=$CUSTOM" >> "$GITHUB_OUTPUT"
-            else echo "list=$CHOICE" >> "$GITHUB_OUTPUT"; fi
-          elif [[ "$REF" == refs/tags/v* ]]; then
-            echo "list=all" >> "$GITHUB_OUTPUT"
-          else
-            echo "list=repo-default" >> "$GITHUB_OUTPUT"      # push / PR: just prove the repo still builds
-          fi
-
       - name: Build
-        env:
-          LIST: ${{ steps.pick.outputs.list }}
-        run: scripts/ci_build.sh "$LIST"
+        run: bash build.sh
 
-      - name: Upload images
+      - name: Checksum
+        run: cd out && sha256sum *.img | tee SHA256SUMS
+
+      - name: Upload image
         uses: actions/upload-artifact@v4
         with:
           name: oneplus-hotdogb-uefi

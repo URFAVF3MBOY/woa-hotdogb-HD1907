@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Builds the OnePlus 7T (hotdogb, SM8150) UEFI boot image.  Output: out/oneplus-hotdogb.img
-#   ./build.sh                          build with the DSDT that is in the repo
-#   DSDT=/path/to/DSDT.aml ./build.sh   build with your own DSDT (copied over the device's ACPI/DSDT.aml)
+#   ./build.sh                          builds with the DSDT in Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/ACPI
 #   JOBS=8 ./build.sh                   parallel jobs (default: nproc)
 #   OUT_SUFFIX=_v29 ./build.sh          output name suffix -> out/oneplus-hotdogb_v29.img
 set -euo pipefail
@@ -19,12 +18,10 @@ for t in clang lld-link llvm-lib llvm-rc llvm-objcopy gcc g++ make python3 git c
 done
 [ -f /usr/include/uuid/uuid.h ] || { echo "missing libuuid headers (apt install uuid-dev)"; exit 1; }
 
-./scripts/fetch_deps.sh
+# Files uploaded from Windows lose their executable bit; restore it so this works from any checkout.
+chmod +x build.sh scripts/*.sh MU_BASECORE/BaseTools/BinWrappers/PosixLike/* 2>/dev/null || true
 
-if [ -n "${DSDT:-}" ]; then
-  cp "$DSDT" "Platforms/$PKG/Device/$DEVICE/ACPI/DSDT.aml"
-  echo "[build] using DSDT: $DSDT  (md5 $(md5sum "$DSDT" | cut -d' ' -f1))"
-fi
+bash ./scripts/fetch_deps.sh
 
 # --- BaseTools (C tools) ---
 BT="$ROOT/MU_BASECORE/BaseTools"
