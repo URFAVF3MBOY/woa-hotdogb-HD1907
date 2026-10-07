@@ -1,5 +1,6 @@
 OnePlus 7T (hotdogb) DSDT patches and documentation
 Copyright 2026 URFAVF3MBOY
+https://github.com/URFAVF3MBOY/woa-hotdogb-HD1907
 First written: 2026-10-07 (the git history of this repository records the first public commit)
 
 This NOTICE and the following files are licensed under the Apache License, Version 2.0
@@ -8,8 +9,19 @@ This NOTICE and the following files are licensed under the Apache License, Versi
   docs/dsdt/CHANGES.md
   docs/dsdt/make_dsdt.py
 
+They describe and reproduce these edits to the Project Aloha OnePlus 7T DSDT, which fix problems the upstream
+support does not address:
+
+  - GPU:      MSHW1004 panel device added so GPU0 can start
+  - Touch:    TSC1 no longer waits for TECC; I2C address set to 0x20
+  - Charging: USB-C sink power list set to 5 V / 2.9 A
+
 If you redistribute these files, or anything derived from them, you must keep this NOTICE (Apache-2.0, section 4(d)),
 which means keeping the attribution above.
 
-This does NOT cover docs/dsdt/DSDT.original.aml, which is the unmodified upstream file, or the rest of this repository.
-Those stay under their own licences, listed in LICENSE and in the licence files of each included tree.
+This does NOT cover DSDT.aml, docs/dsdt/DSDT.original.aml, or the rest of this repository. DSDT.aml is derived from
+the Project Aloha DSDT and stays under the upstream licence; this NOTICE does not relicense it. Those files stay under
+their own licences, listed in LICENSE and in the licence files of each included tree.
+
+Requested credit: if you apply the same patches to your own tree (including Project Aloha or any other port), please
+credit URFAVF3MBOY and link to https://github.com/URFAVF3MBOY/woa-hotdogb-HD1907

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 URFAVF3MBOY (see NOTICE at the repository root; keep it if you redistribute this file)
+# https://github.com/URFAVF3MBOY/woa-hotdogb-HD1907
 """Rebuild the hotdogb DSDT from the original Project Aloha DSDT.
 
   python3 make_dsdt.py ORIGINAL_DSDT.aml OUTPUT_DSDT.aml

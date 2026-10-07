@@ -21,11 +21,11 @@ Copyright holders are listed in `LICENSE`
 
 The documentation and script for the DSDT edits (`docs/dsdt/CHANGES.md`, `docs/dsdt/make_dsdt.py`) are my own work and are
 licensed under Apache-2.0 (`docs/dsdt/LICENSE-APACHE-2.0`). If you redistribute them or anything derived from them, you must
-keep the attribution in [`NOTICE`](NOTICE). They were first written on 2026-10-07; the git history shows the first public commit.
+keep the attribution in [`NOTICE`](NOTICE). That grant covers only those two files: `DSDT.aml` and `DSDT.original.aml` are derived from Project Aloha / WOA-Project and stay under their upstream licences. They were first written on 2026-10-07; the git history shows the first public commit.
 
 The DSDT edits fix problems that the upstream OnePlus 7T support does not address. If you apply the same patches to your own
 tree (including Project Aloha or any other port), I would like to be credited: please mention **URFAVF3MBOY** and link back to
-this repository. The upstream projects in Credits deserve the same.
+[this repository](https://github.com/URFAVF3MBOY/woa-hotdogb-HD1907). The upstream projects in Credits deserve the same.
 
 ## Status
 Tested on a OnePlus 7T with this repository's image and Windows 11 ARM64 (24H2).
@@ -87,6 +87,7 @@ To change the DSDT, replace that one file and rebuild.
 * [WOA-Project](https://github.com/WOA-Project) — Qualcomm ACPI tables
 * [Project Mu](https://github.com/microsoft/mu_basecore) and [TianoCore EDK II](https://github.com/tianocore/edk2) — firmware core
 * OpenSSL
+* [URFAVF3MBOY](https://github.com/URFAVF3MBOY/woa-hotdogb-HD1907) — OnePlus 7T (hotdogb) DSDT edits for GPU, touch and charging, the trimmed hotdogb-only build tree, and this repository
 
 ## Licences
 Project Mu / edk2 (BSD-2-Clause-Patent), OpenSSL (Apache-2.0), the repository `LICENSE`, and the licence files at the
