@@ -1,13 +1,58 @@
-# hotdogb-builder
+# OnePlus 7T (hotdogb) UEFI builder
 
-A minimal, self-contained builder for the **OnePlus 7T (hotdogb, SM8150)** UEFI boot image
-(Windows on ARM), cut down from `URFAVF3MBOY/mu_aloha_platforms` (a fork of Project-Aloha's
-`mu_aloha_platforms`) to only what this one device needs.
+Builds the UEFI boot image that runs **Windows 11 on ARM** on the **OnePlus 7T (hotdogb, Snapdragon 855 / SM8150)**.
+It is a trimmed, single-device version of [Project Aloha's `mu_aloha_platforms`](https://github.com/Project-Aloha/mu_aloha_platforms),
+containing only what the hotdogb build needs.
 
 ```
 bash build.sh                       # -> out/oneplus-hotdogb.img
 fastboot boot out/oneplus-hotdogb.img
 ```
+
+## Status
+Tested on a OnePlus 7T with this repository's image and Windows 11 ARM64 (25H2).
+
+> **Requires test signing.** The drivers used with this image are unsigned, so Windows must have test signing turned on
+> (`bcdedit /set testsigning on`, then reboot).
+
+| Feature | Status |
+|---|---|
+| Boot (UEFI → Windows 11 ARM64) | Working |
+| Display and GPU acceleration | Working |
+| Touch | Working |
+| Wi-Fi | Working |
+| Bluetooth | Working |
+| Audio | Working |
+| Sleep and wake (screen off when idle, power button wakes) | Working |
+| Battery (level and status) | Working |
+| Charging over USB-C (USB-C to USB-C, PD charger) | Working — roughly 3–4 W; faster charging is still being worked on |
+
+**Known issues**
+
+| Feature | Status |
+|---|---|
+| Charging from USB-A to USB-C chargers | Charges, but very slowly |
+| USB host (OTG) | Not working yet — a fix is in progress |
+| Cameras | Not working |
+| Sensors | Not working |
+
+**Not yet tested:** cellular/modem.
+
+## Drivers
+The Windows drivers used with this image come mostly from
+[n00b69/woa-op7](https://github.com/n00b69/woa-op7/tree/main). This repository only builds the UEFI firmware;
+it does not contain the Windows drivers.
+
+## ACPI (DSDT)
+The image uses one DSDT: `Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/ACPI/DSDT.aml`. It is the original Project Aloha
+DSDT with four small edits, listed byte by byte in [`docs/dsdt/CHANGES.md`](docs/dsdt/CHANGES.md):
+
+* **GPU:** a new `MSHW1004` panel device that `GPU0` depends on (graphics acceleration with the Surface Duo graphics driver)
+* **Touch:** `TSC1` no longer waits for `TECC`, and its I2C address is `0x20`
+* **Charging:** the USB-C sink power list is 5 V / 2.9 A only (no 9 V or 12 V)
+
+`docs/dsdt/DSDT.original.aml` is the unmodified original and `docs/dsdt/make_dsdt.py` rebuilds the DSDT from it.
+To change the DSDT, replace that one file and rebuild.
 
 ## Building on GitHub (no Linux machine needed)
 1. Create a new repository and push this folder to it. It is about 95 MB with no file over 20 MB, so Git LFS is not needed.
@@ -50,22 +95,14 @@ Removed: every other device and SoC, the secure-boot variant (`SurfaceDuo1.dsc`)
 images (about 100 MB), docs, CI files, Docker files, stuart scripts, unit tests, unused parts of the submodules and their nested submodules
 (brotli, oniguruma, googletest, cmocka, libspdm and similar).
 
-## How the trimmed tree was verified
-The file list was recorded with `strace` during a full build of the upstream-style tree, completed with every
-file named in the INF `[Sources]/[Binaries]` sections and the include dirs named in the DEC files (edk2 checks
-those exist even when it does not compile them). A clean build from this tree then produced the same 107 modules
-as the full tree, the same FVMAIN size (12,562,432 bytes), and 104 of 107 `.efi` files were byte-identical
-(the other 3 differ only by build-path/timestamp content, which varies between any two builds).
-
-**Not verified:** booting the resulting image on a phone, and Debug/NOOPT targets. Only RELEASE / NoSb was built.
-
-## The DSDT
-There is exactly one: `Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/ACPI/DSDT.aml`. It is the **sink5v29** DSDT
-(md5 `3b893e9ba516f08d08957ce37d517bb9`): the `mshw1004` base with the USB-C sink PDO set to 5 V / 2.9 A.
-It does **not** include the DCMA 900 → 1500 change. To try something else, replace that one file and rebuild.
+## Credits
+* [n00b69/woa-op7](https://github.com/n00b69/woa-op7) — Windows drivers and the OnePlus 7T guide
+* [Project Aloha](https://github.com/Project-Aloha) — `mu_aloha_platforms`, the SM8150 platform code and prebuilt binaries
+* [WOA-Project](https://github.com/WOA-Project) — Qualcomm ACPI tables
+* [Project Mu](https://github.com/microsoft/mu_basecore) and [TianoCore EDK II](https://github.com/tianocore/edk2) — firmware core
+* OpenSSL
 
 ## Licences
-Project Mu / edk2 (BSD-2-Clause-Patent), OpenSSL (Apache-2.0), the fork's `LICENSE`, and the licence files that
-sit at the root of each vendored tree are included. `Binaries/` and the crypto binaries are downloaded, not
-redistributed. `Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/{Binaries,PatchedBinaries}` contain prebuilt
-vendor drivers that come from the fork — check you are allowed to republish them before making this public.
+Project Mu / edk2 (BSD-2-Clause-Patent), OpenSSL (Apache-2.0), the repository `LICENSE`, and the licence files at the
+root of each included tree are kept. The crypto binaries and `Binaries/` are downloaded at build time, not stored here.
+`Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/{Binaries,PatchedBinaries}` contain prebuilt drivers from the upstream project.
