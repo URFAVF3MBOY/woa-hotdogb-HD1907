@@ -81,10 +81,6 @@ To change the DSDT, replace that one file and rebuild.
 | `MU_BASECORE`, `Common/*`, `Silicon/Arm/MU_TIANO`, `Features/*` | Project Mu / edk2 files that are actually used; BaseTools C and Python sources; `MdePkg/Include` |
 | `BootShim`, `ImageResources/emptyramdisk`, `tools/` | boot image packaging |
 
-Removed: every other device and SoC, the secure-boot variant (`SurfaceDuo1.dsc`), the Surface Duo / Epsilon / Zeta
-images (about 100 MB), docs, CI files, Docker files, stuart scripts, unit tests, unused parts of the submodules and their nested submodules
-(brotli, oniguruma, googletest, cmocka, libspdm and similar).
-
 ## Credits
 * [n00b69/woa-op7](https://github.com/n00b69/woa-op7) — Windows drivers and the OnePlus 7 guide
 * [Project Aloha](https://github.com/Project-Aloha) — `mu_aloha_platforms`, the SM8150 platform code and prebuilt binaries
