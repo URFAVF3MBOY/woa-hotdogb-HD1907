@@ -68,7 +68,7 @@ The Windows drivers used with this image come mostly from [n00b69/woa-op7](https
 ## ACPI (DSDT)
 The image uses one DSDT: `Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/ACPI/DSDT.aml`. It is the original Project Aloha DSDT with four critical edits, listed byte by byte in [`docs/dsdt/CHANGES.md`](docs/dsdt/CHANGES.md):
 
-* **GPU:** A new `MSHW1004` panel device that `GPU0` depends on (enables hardware graphics acceleration without freezing).
+* **GPU:** A new `MSHW1004` panel device that `GPU0` depends on (allows the graphics drivers to load properly).
 * **Touch:** `TSC1` no longer waits for `TECC`, and its I2C address is adjusted to `0x20` (enables working native touchscreen).
 * **Charging:** The USB-C sink power list is strictly limited to `5 V / 2.9 A` only (disables 9V/12V negotiation to kill the charging BSOD loop).
 
