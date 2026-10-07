@@ -1,5 +1,7 @@
 # DSDT changes (hotdogb)
 
+Copyright 2026 URFAVF3MBOY, Apache-2.0 (see `NOTICE` and `LICENSE-APACHE-2.0`). First written 2026-10-07.
+
 `Platforms/SurfaceDuo1Pkg/Device/oneplus-hotdogb/ACPI/DSDT.aml` is the original Project Aloha DSDT
 (`docs/dsdt/DSDT.original.aml`) plus the four edits below, and nothing else.
 `python3 docs/dsdt/make_dsdt.py docs/dsdt/DSDT.original.aml DSDT.aml` rebuilds it byte for byte and checks every

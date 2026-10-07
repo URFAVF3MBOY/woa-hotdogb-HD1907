@@ -1,0 +1,15 @@
+OnePlus 7T (hotdogb) DSDT patches and documentation
+Copyright 2026 URFAVF3MBOY
+First written: 2026-10-07 (the git history of this repository records the first public commit)
+
+This NOTICE and the following files are licensed under the Apache License, Version 2.0
+(full text in docs/dsdt/LICENSE-APACHE-2.0):
+
+  docs/dsdt/CHANGES.md
+  docs/dsdt/make_dsdt.py
+
+If you redistribute these files, or anything derived from them, you must keep this NOTICE (Apache-2.0, section 4(d)),
+which means keeping the attribution above.
+
+This does NOT cover docs/dsdt/DSDT.original.aml, which is the unmodified upstream file, or the rest of this repository.
+Those stay under their own licences, listed in LICENSE and in the licence files of each included tree.
