@@ -12,7 +12,7 @@ It is a trimmed, modified, single-device version of [Project Aloha's `mu_aloha_p
 > If you rush, skip steps, or blindly copy-paste commands, **you WILL hard-brick your smartphone.** 
 
 * **No Hand-Holding:** This repository is built for intermediate to advanced developers. If you do not know how to handle low-level device flashing, take a step back.
-* **Your Lifeline:** Do not even *think* about flashing this unless you have the **OnePlus 7T MSM Download Tool (EDL Recovery)** configured and verified on your Windows PC. If you lose your partition table and don't have MSM ready, your device is permanently gone.
+* **Your Lifeline:** If you have no clue what you're doing have MSM Tool handy to get your device back into a working state. If you don't and brick your device it is not my responsibility. 
 * **Test Signing:** The drivers used are completely unsigned. You **MUST** run `bcdedit /set testsigning on` in Windows ARM or your installation will instantly crash on boot.
 
 ---
